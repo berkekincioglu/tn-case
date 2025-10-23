@@ -1,0 +1,18 @@
+# Core Django
+Django==5.2.7
+djangorestframework==3.16.1
+
+# Database
+psycopg2-binary==2.9.11
+
+# Environment variables
+python-decouple==3.8
+
+# CORS headers (if needed for frontend)
+django-cors-headers==4.9.0
+
+# Development tools
+django-extensions==4.1.0
+
+# API Documentation (optional but recommended)
+drf-spectacular==0.28.0

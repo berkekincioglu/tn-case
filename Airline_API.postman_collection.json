@@ -1,0 +1,971 @@
+{
+	"info": {
+		"_postman_id": "airline-management-api",
+		"name": "Airline Management System API",
+		"description": "Complete API collection for the Airline Management System. This collection includes all endpoints for managing airplanes, flights, and reservations.\n\n**Base URL:** http://127.0.0.1:8000/api/\n\n**Features:**\n- Airplane CRUD operations\n- Flight management with conflict detection\n- Reservation system with capacity checking\n- Custom actions (get flights for airplane, get reservations for flight, cancel reservation)\n\n**Setup:**\n1. Start your Django server: `python manage.py runserver`\n2. Create some test data using the POST requests\n3. Test all endpoints\n\n**Note:** Replace `{id}` in URLs with actual IDs from your database.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Airplanes",
+			"item": [
+				{
+					"name": "List All Airplanes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/airplanes/?limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "airplanes", ""],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get a list of all airplanes in the system.\n\n**Response includes:**\n- count: Total number of airplanes\n- results: Array of airplane objects\n\n**Pagination:**\n- limit: Items per page (default: 10)\n- page: Page number (default: 1)"
+					}
+				},
+				{
+					"name": "List Active Airplanes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/airplanes/?status=true&limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "airplanes", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "true",
+									"description": "Filter by operational status (true/false)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get only operational (active) airplanes."
+					}
+				},
+				{
+					"name": "Get Airplane Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/airplanes/1/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "airplanes", "1", ""]
+						},
+						"description": "Get detailed information about a specific airplane.\n\n**Replace `1` with actual airplane ID.**"
+					}
+				},
+				{
+					"name": "Create Airplane",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tail_number\": \"TC-NRT\",\n    \"model\": \"Airbus A320\",\n    \"capacity\": 180,\n    \"production_year\": 2020,\n    \"status\": true\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/airplanes/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "airplanes", ""]
+						},
+						"description": "Create a new airplane.\n\n**Required fields:**\n- tail_number: Unique identifier (e.g., TC-NRT)\n- model: Aircraft model (e.g., Airbus A320)\n- capacity: Passenger capacity (1-1000)\n- production_year: Manufacturing year (1950-current)\n- status: Operational status (true/false)"
+					}
+				},
+				{
+					"name": "Update Airplane",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": false\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/airplanes/1/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "airplanes", "1", ""]
+						},
+						"description": "Update airplane information. You can update any field(s).\n\n**Replace `1` with actual airplane ID.**"
+					}
+				},
+				{
+					"name": "Delete Airplane",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/airplanes/1/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "airplanes", "1", ""]
+						},
+						"description": "Delete an airplane.\n\n**Note:** Cannot delete if the airplane has associated flights. Delete or reassign flights first.\n\n**Replace `1` with actual airplane ID.**"
+					}
+				},
+				{
+					"name": "Get Airplane Flights",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/airplanes/1/flights/?limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "airplanes", "1", "flights", ""],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get all flights for a specific airplane.\n\n**Replace `1` with actual airplane ID.**"
+					}
+				}
+			],
+			"description": "Endpoints for managing airplanes (aircraft fleet)."
+		},
+		{
+			"name": "Flights",
+			"item": [
+				{
+					"name": "List All Flights",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/?limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", ""],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get a list of all flights.\n\n**Pagination:**\n- limit: Items per page (default: 10)\n- page: Page number (default: 1)"
+					}
+				},
+				{
+					"name": "Filter Flights by Location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/?departure=Istanbul&destination=London&limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", ""],
+							"query": [
+								{
+									"key": "departure",
+									"value": "Istanbul",
+									"description": "Filter by departure location (partial match, case-insensitive)"
+								},
+								{
+									"key": "destination",
+									"value": "London",
+									"description": "Filter by destination location (partial match, case-insensitive)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Filter flights by departure and destination locations.\n\n**Filtering is case-insensitive and supports partial matches.**\nExample: \"istanbul\" matches \"Istanbul Airport\""
+					}
+				},
+				{
+					"name": "Filter Flights by Date",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/?departure_date=2024-12-25&limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", ""],
+							"query": [
+								{
+									"key": "departure_date",
+									"value": "2024-12-25",
+									"description": "Filter by departure date (YYYY-MM-DD format)"
+								},
+								{
+									"key": "arrival_date",
+									"value": "2024-12-25",
+									"disabled": true,
+									"description": "Filter by arrival date (YYYY-MM-DD format)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Filter flights by departure or arrival date.\n\n**Date format:** YYYY-MM-DD"
+					}
+				},
+				{
+					"name": "Get Flight Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/1/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", "1", ""]
+						},
+						"description": "Get detailed information about a specific flight including airplane details and availability.\n\n**Replace `1` with actual flight ID.**"
+					}
+				},
+				{
+					"name": "Create Flight",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"flight_number\": \"TK123\",\n    \"departure\": \"Istanbul Airport\",\n    \"destination\": \"London Heathrow\",\n    \"departure_time\": \"2024-12-25T10:00:00Z\",\n    \"arrival_time\": \"2024-12-25T14:00:00Z\",\n    \"airplane\": 1\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", ""]
+						},
+						"description": "Create a new flight.\n\n**Required fields:**\n- flight_number: Unique identifier (e.g., TK123)\n- departure: Departure location\n- destination: Destination location\n- departure_time: ISO 8601 datetime (YYYY-MM-DDTHH:MM:SSZ)\n- arrival_time: ISO 8601 datetime (must be after departure)\n- airplane: Airplane ID\n\n**Validations:**\n- Flight times cannot conflict with other flights of the same airplane\n- Minimum 1-hour gap between flights required\n- Flight duration must be at least 30 minutes\n- Airplane must be operational"
+					}
+				},
+				{
+					"name": "Update Flight",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"departure_time\": \"2024-12-25T11:00:00Z\",\n    \"arrival_time\": \"2024-12-25T15:00:00Z\"\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/1/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", "1", ""]
+						},
+						"description": "Update flight information.\n\n**Replace `1` with actual flight ID.**\n\n**Note:** Conflict checking still applies when updating times."
+					}
+				},
+				{
+					"name": "Delete Flight",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/1/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", "1", ""]
+						},
+						"description": "Delete a flight.\n\n**Note:** Cannot delete if the flight has active reservations. Cancel reservations first.\n\n**Replace `1` with actual flight ID.**"
+					}
+				},
+				{
+					"name": "Get Flight Reservations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/1/reservations/?limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", "1", "reservations", ""],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get all reservations for a specific flight.\n\n**Response includes:**\n- Flight information\n- Total reservations\n- Available seats\n- List of reservations\n\n**Replace `1` with actual flight ID.**"
+					}
+				},
+				{
+					"name": "Get Active Flight Reservations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/flights/1/reservations/?status=true&limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "flights", "1", "reservations", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "true",
+									"description": "Filter by status (true=active, false=cancelled)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get only active (not cancelled) reservations for a flight."
+					}
+				}
+			],
+			"description": "Endpoints for managing flights with conflict detection and filtering."
+		},
+		{
+			"name": "Reservations",
+			"item": [
+				{
+					"name": "List All Reservations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reservations/?limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "reservations", ""],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get a list of all reservations.\n\n**Pagination:**\n- limit: Items per page (default: 10)\n- page: Page number (default: 1)"
+					}
+				},
+				{
+					"name": "Filter Active Reservations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reservations/?status=true&limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "reservations", ""],
+							"query": [
+								{
+									"key": "status",
+									"value": "true",
+									"description": "Filter by status (true=active, false=cancelled)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get only active (not cancelled) reservations."
+					}
+				},
+				{
+					"name": "Filter by Flight",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reservations/?flight=1&limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "reservations", ""],
+							"query": [
+								{
+									"key": "flight",
+									"value": "1",
+									"description": "Filter by flight ID"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get reservations for a specific flight."
+					}
+				},
+				{
+					"name": "Filter by Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reservations/?passenger_email=john@example.com&limit=10&page=1",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "reservations", ""],
+							"query": [
+								{
+									"key": "passenger_email",
+									"value": "john@example.com",
+									"description": "Filter by passenger email (case-insensitive)"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								}
+							]
+						},
+						"description": "Get reservations for a specific passenger email."
+					}
+				},
+				{
+					"name": "Get Reservation Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reservations/1/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "reservations", "1", ""]
+						},
+						"description": "Get detailed information about a specific reservation.\n\n**Replace `1` with actual reservation ID.**"
+					}
+				},
+				{
+					"name": "Create Reservation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"passenger_name\": \"John Doe\",\n    \"passenger_email\": \"john@example.com\",\n    \"flight\": 1\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reservations/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "reservations", ""]
+						},
+						"description": "Create a new reservation.\n\n**Required fields:**\n- passenger_name: Full name (2-200 characters)\n- passenger_email: Valid email address\n- flight: Flight ID\n\n**Automatic:**\n- reservation_code: Unique 8-character alphanumeric code\n- created_at: Current timestamp\n- status: Set to true (active)\n\n**Validations:**\n- Flight must have available seats\n- Flight must not have already departed\n- Email format must be valid"
+					}
+				},
+				{
+					"name": "Update Reservation",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"passenger_email\": \"newemail@example.com\"\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reservations/1/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "reservations", "1", ""]
+						},
+						"description": "Update reservation information.\n\n**Replace `1` with actual reservation ID.**\n\n**Note:** If changing flight, capacity checking applies."
+					}
+				},
+				{
+					"name": "Cancel Reservation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/reservations/1/cancel/",
+							"protocol": "http",
+							"host": ["127", "0", "0", "1"],
+							"port": "8000",
+							"path": ["api", "reservations", "1", "cancel", ""]
+						},
+						"description": "Cancel a reservation (sets status to false).\n\n**This does NOT delete the reservation** - it keeps the record for historical purposes.\n\n**Replace `1` with actual reservation ID.**"
+					}
+				}
+			],
+			"description": "Endpoints for managing passenger reservations with capacity checking."
+		},
+		{
+			"name": "Test Scenarios",
+			"item": [
+				{
+					"name": "Scenario 1: Create Complete Booking Flow",
+					"item": [
+						{
+							"name": "1. Create Airplane",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"tail_number\": \"TC-TEST1\",\n    \"model\": \"Boeing 737\",\n    \"capacity\": 150,\n    \"production_year\": 2021,\n    \"status\": true\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/airplanes/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "airplanes", ""]
+								}
+							}
+						},
+						{
+							"name": "2. Create Flight",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"flight_number\": \"TEST001\",\n    \"departure\": \"Test Airport A\",\n    \"destination\": \"Test Airport B\",\n    \"departure_time\": \"2025-01-15T10:00:00Z\",\n    \"arrival_time\": \"2025-01-15T14:00:00Z\",\n    \"airplane\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/airplanes/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "flights", ""]
+								}
+							}
+						},
+						{
+							"name": "3. Make Reservation",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"passenger_name\": \"Test Passenger\",\n    \"passenger_email\": \"test@example.com\",\n    \"flight\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/reservations/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "reservations", ""]
+								}
+							}
+						}
+					],
+					"description": "Complete workflow: Create airplane → Create flight → Make reservation"
+				},
+				{
+					"name": "Scenario 2: Test Flight Conflict",
+					"item": [
+						{
+							"name": "Create First Flight",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"flight_number\": \"CONFLICT1\",\n    \"departure\": \"Airport A\",\n    \"destination\": \"Airport B\",\n    \"departure_time\": \"2025-01-15T10:00:00Z\",\n    \"arrival_time\": \"2025-01-15T12:00:00Z\",\n    \"airplane\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/flights/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "flights", ""]
+								},
+								"description": "Create a flight from 10:00 to 12:00"
+							}
+						},
+						{
+							"name": "Try Conflicting Flight (Should Fail)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"flight_number\": \"CONFLICT2\",\n    \"departure\": \"Airport B\",\n    \"destination\": \"Airport C\",\n    \"departure_time\": \"2025-01-15T12:30:00Z\",\n    \"arrival_time\": \"2025-01-15T14:30:00Z\",\n    \"airplane\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/flights/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "flights", ""]
+								},
+								"description": "This should FAIL because it starts at 12:30 (less than 1 hour after previous flight ends at 12:00)"
+							}
+						},
+						{
+							"name": "Create Valid Flight (Should Succeed)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"flight_number\": \"VALID1\",\n    \"departure\": \"Airport B\",\n    \"destination\": \"Airport C\",\n    \"departure_time\": \"2025-01-15T13:00:00Z\",\n    \"arrival_time\": \"2025-01-15T15:00:00Z\",\n    \"airplane\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/flights/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "flights", ""]
+								},
+								"description": "This should SUCCEED because it starts at 13:00 (1 hour after previous flight ends)"
+							}
+						}
+					],
+					"description": "Test the flight conflict detection (1-hour minimum gap)"
+				},
+				{
+					"name": "Scenario 3: Test Flight Capacity/Occupancy",
+					"item": [
+						{
+							"name": "1. Create Small Airplane (Capacity 2)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"tail_number\": \"TC-SMALL\",\n    \"model\": \"Small Aircraft\",\n    \"capacity\": 2,\n    \"production_year\": 2023,\n    \"status\": true\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/airplanes/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "airplanes", ""]
+								},
+								"description": "Create a small airplane with capacity of only 2 passengers for testing"
+							}
+						},
+						{
+							"name": "2. Create Flight for Small Airplane",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"flight_number\": \"CAPACITY1\",\n    \"departure\": \"Airport A\",\n    \"destination\": \"Airport B\",\n    \"departure_time\": \"2025-02-15T10:00:00Z\",\n    \"arrival_time\": \"2025-02-15T12:00:00Z\",\n    \"airplane\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/flights/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "flights", ""]
+								},
+								"description": "Create a flight using the small airplane (update airplane ID as needed)"
+							}
+						},
+						{
+							"name": "3. Make First Reservation",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"passenger_name\": \"Passenger One\",\n    \"passenger_email\": \"passenger1@example.com\",\n    \"flight\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/reservations/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "reservations", ""]
+								},
+								"description": "First reservation - should SUCCEED (1/2 seats filled)"
+							}
+						},
+						{
+							"name": "4. Make Second Reservation",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"passenger_name\": \"Passenger Two\",\n    \"passenger_email\": \"passenger2@example.com\",\n    \"flight\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/reservations/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "reservations", ""]
+								},
+								"description": "Second reservation - should SUCCEED (2/2 seats filled - FULL)"
+							}
+						},
+						{
+							"name": "5. Try Third Reservation (Should Fail)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"passenger_name\": \"Passenger Three\",\n    \"passenger_email\": \"passenger3@example.com\",\n    \"flight\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/reservations/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "reservations", ""]
+								},
+								"description": "Third reservation - should FAIL because flight is fully booked (capacity exceeded)"
+							}
+						},
+						{
+							"name": "6. Check Flight Availability",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/flights/1/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "flights", "1", ""]
+								},
+								"description": "Check flight details - should show available_seats: 0, is_fully_booked: true"
+							}
+						},
+						{
+							"name": "7. Cancel One Reservation",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/reservations/1/cancel/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "reservations", "1", "cancel", ""]
+								},
+								"description": "Cancel the first reservation to free up a seat"
+							}
+						},
+						{
+							"name": "8. Try Reservation Again (Should Succeed)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"passenger_name\": \"Passenger Three\",\n    \"passenger_email\": \"passenger3@example.com\",\n    \"flight\": 1\n}"
+								},
+								"url": {
+									"raw": "http://127.0.0.1:8000/api/reservations/",
+									"protocol": "http",
+									"host": ["127", "0", "0", "1"],
+									"port": "8000",
+									"path": ["api", "reservations", ""]
+								},
+								"description": "Now should SUCCEED because one seat was freed by cancellation"
+							}
+						}
+					],
+					"description": "Test flight capacity/occupancy checking to ensure overbooking is prevented"
+				}
+			],
+			"description": "Pre-configured test scenarios to validate business logic"
+		}
+	]
+}
