@@ -2,21 +2,6 @@
 
 A comprehensive backend API for managing an airline's aircraft fleet, flights, and passenger reservations, built with Django and Django REST Framework.
 
-## 📋 Table of Contents
-
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Installation & Setup](#installation--setup)
-- [API Endpoints](#api-endpoints)
-- [Business Logic](#business-logic)
-- [Email Notifications](#email-notifications)
-- [Testing with Postman](#testing-with-postman)
-- [Django Admin Interface](#django-admin-interface)
-- [Project Architecture Explained](#project-architecture-explained)
-
----
-
 ## ✨ Features
 
 ### Core Features
@@ -198,6 +183,10 @@ The API will be available at: **http://127.0.0.1:8000/**
 http://127.0.0.1:8000/api/
 ```
 
+## 🧪 Testing with Postman
+
+### Import Airline_Api.postman_collection.json
+
 ### 🔹 Airplane Endpoints
 
 | Method | Endpoint                       | Description                             |
@@ -373,7 +362,3 @@ When creating or cancelling a reservation, the API response includes email statu
   "message": "Reservation created successfully!"
 }
 ```
-
-## 🧪 Testing with Postman
-
-### Import Airline_Api.postman_collection.json
