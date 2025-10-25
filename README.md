@@ -297,16 +297,6 @@ The system automatically sends email notifications to passengers for reservation
 1. **Reservation Confirmation** - When a new reservation is created
 2. **Cancellation Confirmation** - When a reservation is cancelled
 
-### Email Configuration
-
-**Default Mode: Console (Development)**
-
-- Emails are printed to the terminal/console
-- No actual emails are sent
-- Perfect for testing and development
-
-**To see emails in action:**
-
 ```bash
 # Start the server
 python manage.py runserver
