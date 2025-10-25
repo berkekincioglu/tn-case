@@ -286,13 +286,7 @@ Next flight can start: 13:00 or later
 
 **Location:** `reservations/models.py:108` - `_generate_reservation_code()` method
 
----
-
-## 📧 Email Notifications
-
-The system automatically sends email notifications to passengers for reservation events.
-
-### When Emails are Sent
+### When Emails are Sent (Logged to Console SMTP is not configured)
 
 1. **Reservation Confirmation** - When a new reservation is created
 2. **Cancellation Confirmation** - When a reservation is cancelled
