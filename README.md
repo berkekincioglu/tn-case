@@ -1,24 +1,5 @@
 # Airline Management System API
 
-A comprehensive backend API for managing an airline's aircraft fleet, flights, and passenger reservations, built with Django and Django REST Framework.
-
-## ✨ Features
-
-### Core Features
-
-- ✈️ **Airplane Management**: CRUD operations for managing aircraft fleet
-- 🛫 **Flight Management**: Schedule and manage flights with automatic conflict detection
-- 🎫 **Reservation System**: Book flights with automatic seat availability checking
-- 🔒 **Flight Conflict Prevention**: Ensures airplanes don't have overlapping flight schedules (minimum 1-hour gap)
-- 📊 **Capacity Management**: Prevents overbooking by checking available seats
-- 🎲 **Automatic Reservation Codes**: Unique 8-character alphanumeric codes generated automatically
-- 📧 **Email Notifications**: Automatic confirmation emails for reservations and cancellations
-- 🔍 **Advanced Filtering**: Filter flights by departure, destination, and dates
-- 📚 **Interactive API Documentation**: Swagger UI and ReDoc interfaces
-- 👨‍💼 **Admin Interface**: Web-based management dashboard
-
----
-
 ## 🛠 Technology Stack
 
 | Technology            | Version | Purpose                   |
